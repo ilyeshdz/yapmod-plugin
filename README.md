@@ -30,7 +30,9 @@ pnpm dev
 
 The entry point (`src/index.tsx`) exports a **default function** that returns an object with lifecycle hooks. The `yapmod` global API is available inside your plugin:
 
-```ts
+```tsx
+import { createSignal } from 'solid-js';
+
 export default function () {
   return {
     onLoad() {
@@ -39,7 +41,20 @@ export default function () {
       yapmod.settings.registerSection({
         id: 'general',
         label: 'General',
-        render: () => <div>Hello from my plugin!</div>,
+        icon: 'settings',
+        render: () => {
+          const [greeting, setGreeting] = createSignal('Hello, world!');
+
+          return (
+            <yapmod.ui.SettingsPage title="My Plugin" description="Example plugin settings">
+              <yapmod.ui.Section label="Appearance">
+                <yapmod.ui.SettingRow label="Greeting" hint="The text shown when the plugin starts">
+                  <yapmod.ui.Input value={greeting()} onChange={(v) => setGreeting(v)} />
+                </yapmod.ui.SettingRow>
+              </yapmod.ui.Section>
+            </yapmod.ui.SettingsPage>
+          );
+        },
       });
     },
 
@@ -54,7 +69,7 @@ The `yapmod` object provides:
 
 - **`yapmod.log()`** — Log messages with a plugin prefix
 - **`yapmod.storage`** — Reactive per-plugin storage backed by `localStorage`
-- **`yapmod.ui`** — SolidJS UI components (Button, Input, Select, etc.)
+- **`yapmod.ui`** — SolidJS UI components (`SettingsPage`, `Section`, `SettingRow`, `Input`, `Button`, `Select`, etc.)
 - **`yapmod.settings`** — Register settings sections
 - **`yapmod.observe()`** — Watch for DOM elements
 - **`yapmod.solid`** — Access to the shared SolidJS instance
