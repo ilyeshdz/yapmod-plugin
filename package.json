@@ -1,0 +1,13 @@
+{
+  "name": "plugin-starter",
+  "version": "1.0.0",
+  "description": "A starter template for building Yapmod plugins",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "yapmod build --entry src/index.ts --outfile dist/index.js",
+    "dev": "yapmod dev --entry src/index.ts --outfile dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
