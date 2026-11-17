@@ -28,17 +28,25 @@ pnpm dev
 
 ## Writing Your Plugin
 
-The entry point (`src/index.tsx`) exports a `setup()` function that runs when the plugin starts. Inside, you have access to the `yapmod` global API:
+The entry point (`src/index.tsx`) exports a **default function** that returns an object with lifecycle hooks. The `yapmod` global API is available inside your plugin:
 
 ```ts
-export function setup() {
-  yapmod.log('Plugin started!');
+export default function () {
+  return {
+    onLoad() {
+      yapmod.log('Plugin started!');
 
-  yapmod.settings.registerSection({
-    id: 'general',
-    label: 'General',
-    render: () => <div>Hello from my plugin!</div>,
-  });
+      yapmod.settings.registerSection({
+        id: 'general',
+        label: 'General',
+        render: () => <div>Hello from my plugin!</div>,
+      });
+    },
+
+    onUnload() {
+      yapmod.log('Plugin stopped!');
+    },
+  };
 }
 ```
 
