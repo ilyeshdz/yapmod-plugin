@@ -4,10 +4,19 @@
   "description": "A starter template for building Yapmod plugins",
   "main": "dist/index.js",
   "scripts": {
-    "build": "yapmod build --entry src/index.ts --outfile dist/index.js",
-    "dev": "yapmod dev --entry src/index.ts --outfile dist/index.js"
+    "build": "yapmod build --entry src/index.tsx --outfile dist/index.js",
+    "dev": "yapmod dev --entry src/index.tsx --outfile dist/index.js"
   },
-  "keywords": [],
+  "keywords": [
+    "yapmod",
+    "plugin",
+    "starter"
+  ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@yapmod/builder": "^1.3.0",
+    "@yapmod/types": "^1.0.2",
+    "solid-js": "^1.9.18"
+  }
 }
