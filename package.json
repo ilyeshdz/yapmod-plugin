@@ -1,7 +1,7 @@
 {
   "name": "yapmod-plugin",
   "version": "1.0.0",
-  "description": "Le catalogue personnel de plugins Yapmod d’ilyeshdz.",
+  "description": "Personal Yapmod plugin catalog by ilyeshdz.",
   "scripts": {
     "build": "pnpm typecheck && node scripts/plugins.mjs build",
     "dev": "node scripts/plugins.mjs dev",

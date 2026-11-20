@@ -23,7 +23,7 @@ function run(command, slug, ...options) {
 
 const [command, selected, ...options] = process.argv.slice(2);
 if (command === 'dev') {
-  if (!folders.length) throw new Error('Ajoutez un premier plugin dans plugins/<slug>/.');
+  if (!folders.length) throw new Error('Add your first plugin in plugins/<slug>/.');
   const slug = selected ?? (folders.length === 1 ? folders[0] : undefined);
   if (!folders.includes(slug)) throw new Error(`Choose a plugin: pnpm dev <${folders.join('|')}>`);
   run('dev', slug, ...options);
@@ -64,10 +64,10 @@ async function buildCatalog() {
       <h2>${escapeHtml(manifest.name)}</h2>
       <small>v${escapeHtml(manifest.version)} · ${escapeHtml(manifest.author)}</small>
       <p>${escapeHtml(manifest.description)}</p>
-      <a href="./${slug}/plugin.js" download="${slug}.js">Télécharger le JavaScript</a>
-      ${url ? `<label>Lien d’import Yapmod<input readonly value="${escapeHtml(url)}" onclick="this.select()"></label>` : ''}
+      <a href="./${slug}/plugin.js" download="${slug}.js">Download JavaScript</a>
+      ${url ? `<label>Yapmod import URL<input readonly value="${escapeHtml(url)}" onclick="this.select()"></label>` : ''}
     </article>`);
   }
   const template = await readFile(new URL('./catalog.html', import.meta.url), 'utf8');
-  await writeFile('dist/index.html', template.replace('<!-- plugins -->', () => cards.length ? cards.join('\n') : '<p>Aucun plugin publié pour le moment.</p>'));
+  await writeFile('dist/index.html', template.replace('<!-- plugins -->', () => cards.length ? cards.join('\n') : '<p>No plugins published yet.</p>'));
 }
