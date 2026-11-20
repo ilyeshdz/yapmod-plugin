@@ -1,13 +1,12 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const folders = (await readdir('plugins', { withFileTypes: true }))
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
   .sort();
-if (!folders.length) throw new Error('Add a plugin in plugins/<slug> first.');
 for (const slug of folders) {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
     throw new Error(`Invalid plugin folder "${slug}". Use lowercase letters, digits and hyphens.`);
@@ -24,6 +23,7 @@ function run(command, slug, ...options) {
 
 const [command, selected, ...options] = process.argv.slice(2);
 if (command === 'dev') {
+  if (!folders.length) throw new Error('Ajoutez un premier plugin dans plugins/<slug>/.');
   const slug = selected ?? (folders.length === 1 ? folders[0] : undefined);
   if (!folders.includes(slug)) throw new Error(`Choose a plugin: pnpm dev <${folders.join('|')}>`);
   run('dev', slug, ...options);
@@ -41,6 +41,7 @@ function escapeHtml(value) {
 async function buildCatalog() {
   const cards = [];
   await rm('dist', { recursive: true, force: true });
+  await mkdir('dist', { recursive: true });
   for (const slug of folders) {
     const file = `plugins/${slug}/package.json`;
     const metadata = JSON.parse(await readFile(file, 'utf8'));
@@ -63,10 +64,10 @@ async function buildCatalog() {
       <h2>${escapeHtml(manifest.name)}</h2>
       <small>v${escapeHtml(manifest.version)} · ${escapeHtml(manifest.author)}</small>
       <p>${escapeHtml(manifest.description)}</p>
-      <a href="./${slug}/plugin.js" download="${slug}.js">Download JavaScript</a>
-      ${url ? `<label>Yapmod import URL<input readonly value="${escapeHtml(url)}" onclick="this.select()"></label>` : ''}
+      <a href="./${slug}/plugin.js" download="${slug}.js">Télécharger le JavaScript</a>
+      ${url ? `<label>Lien d’import Yapmod<input readonly value="${escapeHtml(url)}" onclick="this.select()"></label>` : ''}
     </article>`);
   }
   const template = await readFile(new URL('./catalog.html', import.meta.url), 'utf8');
-  await writeFile('dist/index.html', template.replace('<!-- plugins -->', () => cards.join('\n')));
+  await writeFile('dist/index.html', template.replace('<!-- plugins -->', () => cards.length ? cards.join('\n') : '<p>Aucun plugin publié pour le moment.</p>'));
 }
