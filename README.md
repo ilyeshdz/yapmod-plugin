@@ -1,125 +1,14 @@
-# Yapmod Plugin Starter
+# Les plugins Yapmod d’ilyeshdz
 
-Develop and publish a collection of [Yapmod](https://github.com/yapmod) plugins from one public GitHub repository. Each plugin gets a catalog entry, a JavaScript download and its own stable import URL.
+Mon [catalogue personnel](https://ilyeshdz.github.io/yapmod-plugin/) est construit à partir de [Plugin Starter](https://github.com/yapmod/plugin-starter). Chaque plugin publié dispose d’un téléchargement JavaScript et d’un lien à coller dans **Plugins → Add Plugin → Plugin URL** dans Yapmod.
 
-## Develop a plugin
+## Développer un plugin
 
-Fork this repository, clone your fork, and run these commands from its root (Node 24 and pnpm 12):
+Avec Node 24 et pnpm 12, installer les dépendances depuis la racine avec `pnpm install`.
 
-```bash
-pnpm install
-pnpm dev starter
-```
+1. Créer `plugins/<slug>/` avec un nom court en minuscules, chiffres et tirets. Conserver ce nom après publication pour que le lien d’import reste stable.
+2. Ajouter un `package.json` avec les champs texte `name`, `author`, `description` et `version`.
+3. Dans `index.tsx`, exporter par défaut une fonction qui retourne les hooks `onLoad` et `onUnload`.
+4. Lancer `pnpm dev <slug>` pour le rechargement à chaud ou `pnpm build` pour compiler le catalogue entier.
 
-Open the control page printed by the dev server to use hot reload. With a single plugin, `pnpm dev` also works.
-
-Edit `plugins/starter/index.tsx`. To add another plugin, copy `plugins/starter/` to a sibling such as `plugins/weather/`. Give it a distinct name, author, description and version in its own `package.json`, update its settings section ID and code, then run `pnpm dev weather`. Each folder name becomes part of its public URL. Use lowercase letters, digits and hyphens, and keep it stable after publication.
-
-## Build and publish
-
-`pnpm build` type-checks the collection, bundles each entry with the Yapmod CLI and writes `dist/<slug>/plugin.js`, `dist/<slug>/plugin.json` and `dist/index.html`. Open the HTML file for a local preview. Set `GITHUB_REPOSITORY=OWNER/REPO` when building locally to preview the import URLs as well. Build output is generated on every run.
-
-1. In your public fork, enable GitHub Actions and select **Settings → Pages → Build and deployment → Source → GitHub Actions**.
-2. Push to the default branch, or run **Actions → Plugin catalog → Run workflow** on that branch. The workflow uses the built-in GitHub token. Repository rules must allow it to write the generated `plugin-dist` branch.
-3. Open the deployment URL from the workflow to share the catalog. Future pushes rebuild the collection, including added and removed folders.
-
-Visitors can download a plugin’s JavaScript or copy its **Yapmod import URL**. In Yapmod, open **Plugins → Add Plugin**, leave **Local plugin** off, paste the URL into **Plugin URL** and select **Fetch**. Yapmod reads the manifest and bundle from `https://raw.githubusercontent.com/OWNER/REPO/plugin-dist/<slug>/`.
-
-## TypeScript setup
-
-`@yapmod/types` is installed as a dev dependency and referenced from `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "types": ["@yapmod/types/plugin-env"]
-  }
-}
-```
-
-The `plugin-env` entry declares the `yapmod` global, so it is fully typed everywhere in your plugin without imports. It also declares the `@yapmod/ui` module, so component imports type-check even though you never install the UI package.
-
-## Writing Your Plugin
-
-The entry point (`plugins/starter/index.tsx`) exports a **default function** that returns an object with lifecycle hooks. Inside it you have the fully typed `yapmod` API and the shared UI components:
-
-```tsx
-import { Input, Section, SettingRow, SettingsPage } from '@yapmod/ui';
-
-interface StarterStorage {
-  greeting?: string;
-}
-
-const DEFAULT_GREETING = 'Hello, world!';
-
-export default function () {
-  const storage = yapmod.storage as StarterStorage;
-
-  return {
-    onLoad() {
-      yapmod.log('Plugin started!');
-
-      yapmod.settings.registerSection({
-        id: 'starter',
-        label: 'Starter',
-        icon: 'settings',
-        render: () => (
-          <SettingsPage title="My Plugin" description="Example plugin settings">
-            <Section label="Appearance">
-              <SettingRow label="Greeting" hint="The text shown when the plugin starts">
-                <Input
-                  value={storage.greeting ?? DEFAULT_GREETING}
-                  onChange={(value) => {
-                    storage.greeting = value;
-                  }}
-                />
-              </SettingRow>
-            </Section>
-          </SettingsPage>
-        ),
-      });
-    },
-
-    onUnload() {
-      yapmod.log('Plugin stopped!');
-    },
-  };
-}
-```
-
-`onLoad` runs when the plugin starts and `onUnload` runs when it is stopped, so use them to set up and clean up resources.
-
-### UI imports
-
-`@yapmod/ui` is not a dependency. The components ship in the Yapmod client bundle, and `@yapmod/types` provides their typings. The builder rewrites imports like this:
-
-```js
-import { Button, Switch } from '@yapmod/ui';
-```
-
-into references to the shared runtime object:
-
-```js
-const { Button, Switch } = yapmod.ui;
-```
-
-The same rewriting applies to `solid-js`, `solid-js/web`, and `solid-js/store`, which keeps a single copy of SolidJS in the page.
-
-The `yapmod` object provides:
-
-- **`yapmod.log()`** — Log messages with a plugin prefix
-- **`yapmod.storage`** — Reactive per-plugin storage backed by `localStorage`
-- **`yapmod.flushStorage()`** — Persist nested storage changes
-- **`yapmod.ui`** — SolidJS UI components (`SettingsPage`, `Section`, `SettingRow`, `Input`, `Button`, `Select`, etc.)
-- **`yapmod.settings`** — Register settings sections
-- **`yapmod.observe()`** — Watch for DOM elements
-- **`yapmod.solid`** — Access to the shared SolidJS instance
-
-Full API documentation is available at [yapmod.dev/docs](https://yapmod.dev/docs).
-
-## Dependencies
-
-- **@yapmod/builder** — Bundles your TypeScript + SolidJS code into the plugin format
-- **@yapmod/types** — TypeScript definitions for the plugin API, the `yapmod` global, and `@yapmod/ui`
-- **solid-js** — Reactive UI library used by Yapmod plugins
-- **typescript** — Type checking for your plugin source
+Le workflow **Plugin catalog** publie la page et les fichiers importables après chaque compilation réussie de `main`.
