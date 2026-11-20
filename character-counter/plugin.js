@@ -24,88 +24,24 @@ var yapmodPlugin = (() => {
   __export(index_exports, {
     default: () => index_default
   });
-  var selector = ".composer textarea, .composer-box textarea, textarea.msg-input";
-  var styles = `
-  .yp-character-counter {
-    align-self: end;
-    display: block;
-    padding-inline: .5em;
-    color: var(--text-muted, currentColor);
-    font-size: .75rem;
-    font-variant-numeric: tabular-nums;
-    pointer-events: none;
+  function formatCount({
+    length,
+    maxLength
+  }) {
+    if (maxLength === null) return `${length} character${length === 1 ? "" : "s"}`;
+    const text = `${length} / ${maxLength} \xB7 ${Math.max(0, maxLength - length)} left`;
+    return length >= maxLength ? {
+      text,
+      tone: "warning"
+    } : text;
   }
-  .yp-character-counter[data-full] { color: var(--danger, #c44); }
-`;
   function index_default() {
     return {
       onLoad() {
-        const counters = /* @__PURE__ */ new Map();
-        const events = new AbortController();
-        let frame;
-        function update(input, counter) {
-          const used = input.value.length;
-          const limit = input.maxLength;
-          const text = limit < 0 ? `${used} character${used === 1 ? "" : "s"}` : `${used} / ${limit} \xB7 ${Math.max(0, limit - used)} left`;
-          if (counter.textContent !== text) counter.textContent = text;
-          counter.toggleAttribute("data-full", limit >= 0 && used >= limit);
-          if (input.nextElementSibling !== counter) input.after(counter);
+        if (typeof yapmod.composer?.registerStatus !== "function") {
+          throw new Error("Character Counter 1.1 requires Yapmod client 1.1.0 or later.");
         }
-        function refresh() {
-          for (const [input, counter] of counters) {
-            if (input.isConnected) update(input, counter);
-            else {
-              counters.delete(input);
-              counter.remove();
-            }
-          }
-        }
-        function attach(element) {
-          if (!(element instanceof HTMLTextAreaElement)) return;
-          const counter = counters.get(element) ?? document.createElement("span");
-          counter.className = "yp-character-counter";
-          counters.set(element, counter);
-          update(element, counter);
-        }
-        function afterHostUpdate() {
-          if (frame !== void 0) return;
-          frame = requestAnimationFrame(() => {
-            frame = void 0;
-            refresh();
-          });
-        }
-        const changes = new MutationObserver(afterHostUpdate);
-        yapmod.onDispose(() => {
-          events.abort();
-          changes.disconnect();
-          if (frame !== void 0) cancelAnimationFrame(frame);
-          for (const counter of counters.values()) counter.remove();
-          counters.clear();
-        });
-        yapmod.ui.injectCss(styles);
-        yapmod.observe(selector, attach);
-        changes.observe(document.documentElement, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: ["maxlength"]
-        });
-        const options = {
-          capture: true,
-          signal: events.signal
-        };
-        function refreshTarget(event) {
-          if (event.target instanceof HTMLTextAreaElement && event.target.matches(selector)) {
-            attach(event.target);
-          }
-        }
-        document.addEventListener("input", refreshTarget, options);
-        document.addEventListener("focusin", refreshTarget, options);
-        document.addEventListener("reset", afterHostUpdate, options);
-        document.addEventListener("submit", afterHostUpdate, options);
-        document.addEventListener("keyup", (event) => {
-          if (event.key === "Enter") afterHostUpdate();
-        }, options);
+        yapmod.composer.registerStatus(formatCount);
       }
     };
   }
