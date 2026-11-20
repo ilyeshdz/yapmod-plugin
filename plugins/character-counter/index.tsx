@@ -1,4 +1,6 @@
-function formatCount({ length, maxLength }: { length: number; maxLength: number | null }) {
+import type { ComposerStatusState } from '@yapmod/types';
+
+function formatCount({ length, maxLength }: ComposerStatusState) {
   if (maxLength === null) return `${length} character${length === 1 ? '' : 's'}`;
   const text = `${length} / ${maxLength} · ${Math.max(0, maxLength - length)} left`;
   return length >= maxLength ? { text, tone: 'warning' as const } : text;
@@ -7,13 +9,10 @@ function formatCount({ length, maxLength }: { length: number; maxLength: number 
 export default function () {
   return {
     onLoad() {
-      // The catalog also builds against the publicly released v1.1 SDK typings.
-      const composer = 'composer' in yapmod ? yapmod.composer : undefined;
-      if (!composer || typeof composer !== 'object' || !('registerStatus' in composer) ||
-          typeof composer.registerStatus !== 'function') {
-        throw new Error('Update Yapmod to a client with composer status support to use Character Counter.');
+      if (typeof yapmod.composer?.registerStatus !== 'function') {
+        throw new Error('Character Counter 1.1 requires Yapmod client 1.1.0 or later.');
       }
-      composer.registerStatus(formatCount);
+      yapmod.composer.registerStatus(formatCount);
     },
   };
 }

@@ -4,7 +4,7 @@ My [personal plugin catalog](https://ilyeshdz.github.io/yapmod-plugin/) is built
 
 ## Character Counter compatibility
 
-Character Counter 1.1 requires a Yapmod client with `composer.registerStatus`. To use version 1.0 on an older client, paste this pinned import URL into **Plugins → Add Plugin**:
+Character Counter 1.1 uses `composer.registerStatus` and requires [Yapmod client 1.1.0](https://github.com/yapmod/client/releases/tag/v1.1.0) or later. To use version 1.0 on an older client, paste this pinned import URL into **Plugins → Add Plugin**:
 
 ```text
 https://raw.githubusercontent.com/ilyeshdz/yapmod-plugin/f149a9a9705803a530263fa558e93140eb883812/character-counter/
