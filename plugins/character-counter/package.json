@@ -1,0 +1,7 @@
+{
+  "name": "Character Counter",
+  "author": "ilyeshdz",
+  "description": "See your message length as you type and the characters remaining when the composer has a limit.",
+  "version": "1.0.0",
+  "private": true
+}
