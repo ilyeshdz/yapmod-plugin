@@ -15,7 +15,7 @@
   "license": "MIT",
   "devDependencies": {
     "@yapmod/builder": "^1.3.0",
-    "@yapmod/types": "^1.1.0",
+    "@yapmod/types": "^1.2.0",
     "solid-js": "^1.9.18",
     "typescript": "^7.0.2"
   },
