@@ -1,0 +1,7 @@
+{
+  "name": "Saved Replies",
+  "author": "ilyeshdz",
+  "description": "Save reusable messages and insert them into your draft from the composer toolbar. Requires Yapmod client 1.2.0 or later.",
+  "version": "1.0.0",
+  "hash": "65f48bd216aaa9b19f87bd3d72f6bd31f4049cf9fb194ce2ea3e75e94c8d7c1d"
+}
