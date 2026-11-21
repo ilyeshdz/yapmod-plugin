@@ -1,0 +1,7 @@
+{
+  "name": "Saved Replies",
+  "version": "1.0.0",
+  "description": "Save reusable messages and insert them into your draft from the composer toolbar. Requires Yapmod client 1.2.0 or later.",
+  "author": "ilyeshdz",
+  "type": "module"
+}

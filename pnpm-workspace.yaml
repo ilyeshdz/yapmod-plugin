@@ -1,4 +1,4 @@
 allowBuilds:
   esbuild: true
 minimumReleaseAgeExclude:
-  - '@yapmod/types@1.2.0'
+  - '@yapmod/types@1.2.0 || 1.3.0'
